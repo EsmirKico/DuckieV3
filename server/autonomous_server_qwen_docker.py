@@ -103,20 +103,25 @@ def query_qwen_docker(image_b64: str) -> Dict[str, Any]:
         
         # Prepare the request payload for llama.cpp server (fixed prompt)
         prompt = f"""<|im_start|>system
-You are an autonomous driving system for a DuckieBot. Analyze camera images and provide precise driving commands.<|im_end|>
-<|im_start|>user
-<img src="data:image/jpeg;base64,{image_b64}">
+You are a small DuckieBot robot navigating through a miniature DuckieTown world. Your mission is to safely navigate around the town while staying on the lane and avoiding small yellow ducklings.
+
+CRITICAL SAFETY RULES:
+- STOP immediately if any yellow duckling is within 5cm (0.05 meters) of you
+- Always try to stay in the center of the lane between yellow and white lane lines
+- If you see a duckling ahead, choose the safest avoidance direction (left or right)
+- Only move forward when the path is completely clear and safe
+- Be very careful around intersections and curves
 
 Analyze this DuckieBot camera image and provide driving commands.
 
 Look for:
-1. LANE LINES: Yellow/white lines marking the road
-2. OBSTACLES: Duckies, other robots, people in the path
-3. STOP LINES: Red lines across the road
-4. TRAFFIC SIGNS: Stop signs, turn indicators
+1. LANE LINES: Yellow/white lines marking the road - stay centered between them
+2. YELLOW DUCKLINGS: STOP if any are within 5cm!
+3. OBSTACLES: Other robots, people in the path
+4. STOP LINES: Red lines across the road
 
 Respond with ONLY valid JSON:
-{{"lane_detected": true, "lane_confidence": 0.8, "lane_center_offset": 0.0, "lane_angle": 0.0, "obstacle_detected": false, "obstacle_distance": 10.0, "obstacle_position_x": 0.0, "stop_line_detected": false, "recommended_speed": 0.5, "recommended_steering": 0.0, "avoidance_direction": "stop", "driving_state": "lane_following"}}<|im_end|>
+{{"reasoning": "Brief explanation of what you see and your driving decision", "lane_detected": true, "lane_confidence": 0.8, "lane_center_offset": 0.0, "lane_angle": 0.0, "duckie_detected": false, "duckie_distance": 10.0, "duckie_position_x": 0.0, "duckie_within_5cm": false, "obstacle_detected": false, "obstacle_distance": 10.0, "obstacle_position_x": 0.0, "stop_line_detected": false, "recommended_speed": 0.5, "recommended_steering": 0.0, "avoidance_direction": "stop", "driving_state": "lane_following"}}<|im_end|>
 <|im_start|>assistant"""
 
         payload = {
@@ -190,6 +195,10 @@ Respond with ONLY valid JSON:
 def parse_vision_response(vision_data: Dict[str, Any]) -> Tuple[LaneInfo, ObstacleInfo]:
     """Parse Qwen vision response into structured data"""
     try:
+        # Extract reasoning for logging
+        reasoning = vision_data.get("reasoning", "No reasoning provided")
+        logger.info(f"🤖 MODEL REASONING: {reasoning}")
+
         # Parse lane information
         lane_info = LaneInfo(
             confidence=float(vision_data.get("lane_confidence", 0.0)),
@@ -197,14 +206,22 @@ def parse_vision_response(vision_data: Dict[str, Any]) -> Tuple[LaneInfo, Obstac
             lane_angle=float(vision_data.get("lane_angle", 0.0)),
             detected=bool(vision_data.get("lane_detected", False))
         )
-        
-        # Parse obstacle information
+
+        # Parse obstacle information with special duckling handling
         obstacle_info = ObstacleInfo(
             detected=bool(vision_data.get("obstacle_detected", False)),
             distance=float(vision_data.get("obstacle_distance", 10.0)),
             position_x=float(vision_data.get("obstacle_position_x", 0.0)),
             avoidance_direction=str(vision_data.get("avoidance_direction", "stop"))
         )
+
+        # Check if duckie is within 5cm - critical safety check
+        duckie_within_5cm = vision_data.get("duckie_within_5cm", False)
+        if duckie_within_5cm:
+            logger.warning("🚨 DUCKLING WITHIN 5CM - EMERGENCY STOP!")
+            obstacle_info.detected = True
+            obstacle_info.distance = 0.04  # 4cm to trigger emergency stop
+            obstacle_info.avoidance_direction = "stop"
         
         return lane_info, obstacle_info
         
@@ -254,6 +271,14 @@ def calculate_driving_commands(lane_info: LaneInfo, obstacle_info: ObstacleInfo,
             target_speed = 0.0
             driving_state = "stopped"
         
+        # CRITICAL: Handle duckling within 5cm - EMERGENCY STOP
+        if vision_data.get("duckie_within_5cm", False):
+            logger.warning("🚨 EMERGENCY STOP: Duckie within 5cm!")
+            steering_angle = 0.0
+            target_speed = 0.0
+            driving_state = "emergency_stop_duckie"
+            return steering_angle, target_speed, driving_state
+
         # Handle obstacle avoidance (overrides lane following)
         if obstacle_info.detected and obstacle_info.distance < SAFE_DISTANCE_THRESHOLD:
             if obstacle_info.avoidance_direction == "left":

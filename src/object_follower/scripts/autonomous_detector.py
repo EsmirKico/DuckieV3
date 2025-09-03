@@ -107,7 +107,7 @@ class AutonomousDriving:
         
         # API Configuration
         self.api_url = f"http://{API_IP}:{API_PORT}{API_ENDPOINT}"
-        self.api_timeout = rospy.get_param('~api_timeout', 4.0)  # Reduced to 4s to match processing cycle
+        self.api_timeout = rospy.get_param('~api_timeout', 5.0)  # Reduced to 5s to match processing cycle
         
         # Autonomous driving state
         self.current_state = "lane_following"
@@ -117,7 +117,7 @@ class AutonomousDriving:
 
         # Continuous movement feature
         self.last_command_time = 0
-        self.continuous_movement_duration = 4.0  # 4 seconds of continuous movement
+        self.continuous_movement_duration = 5.0  # 5 seconds of continuous movement
         self.last_linear_vel = 1.0  # Default forward speed
         self.last_angular_vel = 0.0  # Default no steering
         self.continuous_movement_active = False
@@ -184,18 +184,18 @@ class AutonomousDriving:
             return None
 
     def check_continuous_movement(self, current_time):
-        """Check if continuous movement should be maintained for 4 seconds"""
+        """Check if continuous movement should be maintained for 5 seconds"""
         if self.continuous_movement_active:
             time_since_last_command = current_time - self.last_command_time
 
             if time_since_last_command < self.continuous_movement_duration:
-                # Still within 4-second window, maintain last movement command
+                # Still within 5-second window, maintain last movement command
                 self.publish_continuous_movement()
                 return True
             else:
-                # 4 seconds elapsed, stop continuous movement
+                # 5 seconds elapsed, stop continuous movement
                 self.continuous_movement_active = False
-                rospy.loginfo("Continuous movement period ended (4 seconds)")
+                rospy.loginfo("Continuous movement period ended (5 seconds)")
                 return False
         return False
 
