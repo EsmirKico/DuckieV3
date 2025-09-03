@@ -117,7 +117,7 @@ class AutonomousDriving:
         
         # Performance tracking
         self.last_process_time = 0
-        self.min_process_interval = 0.3  # Process at ~3 FPS (optimized for Qwen2.5-VL-7B)
+        self.min_process_interval = 0.5  # Process at ~2 FPS (optimized for Qwen2.5-VL-7B with 15s timeout)
         self._processing = False
         
         # Safety parameters

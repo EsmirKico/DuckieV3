@@ -11,7 +11,7 @@
   <node name="autonomous_detector" pkg="object_follower" type="autonomous_detector.py" output="screen">
     <param name="robot_name" value="$(arg robot_name)"/>
     <param name="max_speed" value="0.4"/>
-    <param name="api_timeout" value="2.0"/>
+    <param name="api_timeout" value="15.0"/>
     <!-- Remap to robot-specific camera topic -->
     <remap from="/camera_node/image/compressed" to="/$(arg robot_name)/camera_node/image/compressed"/>
   </node>

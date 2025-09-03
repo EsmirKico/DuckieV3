@@ -18,3 +18,167 @@ qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in "/home/lesgros
 INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.020
 Started recording autonomous driving stream to autonomous_stream.avi
 INFO:     127.0.0.1:46518 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.10, Obstacles: False
+INFO:__main__:Successfully processed image - State: stopped, Steering: 0.000
+INFO:     192.168.140.124:52650 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.50, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.000
+INFO:     192.168.140.124:52662 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.10, Obstacles: False
+INFO:__main__:Successfully processed image - State: stopped, Steering: 0.000
+INFO:     192.168.140.124:52666 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.00, Obstacles: False
+INFO:__main__:Successfully processed image - State: stopped, Steering: 0.000
+INFO:     192.168.140.124:52682 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.10, Obstacles: False
+INFO:__main__:Successfully processed image - State: stopped, Steering: 0.000
+INFO:     192.168.140.124:52690 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.50, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.000
+INFO:     192.168.140.124:52692 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 1.00, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.000
+INFO:     192.168.140.124:52696 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.10, Obstacles: False
+INFO:__main__:Successfully processed image - State: stopped, Steering: 0.000
+INFO:     192.168.140.124:52704 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 1.00, Obstacles: True
+INFO:__main__:Successfully processed image - State: avoiding_obstacle, Steering: -0.800
+INFO:     192.168.140.124:52714 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.70, Obstacles: True
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.140
+INFO:     192.168.140.124:52730 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52746 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.140
+INFO:     192.168.140.124:52750 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.90, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: 0.180
+INFO:     192.168.140.124:52756 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.85, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.520
+INFO:     192.168.140.124:52758 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.90, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52768 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52784 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52786 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.90, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52802 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52810 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52826 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52842 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52846 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.80, Obstacles: False
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.420
+INFO:     192.168.140.124:52848 - "POST /autonomous_drive HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
