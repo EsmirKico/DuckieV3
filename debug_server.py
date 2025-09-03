@@ -109,4 +109,4 @@ async def health():
 
 if __name__ == "__main__":
     print("🚀 Starting Debug Server on port 8003")
-    uvicorn.run(app, host="192.168.140.144", port=8003) 
+    uvicorn.run(app, host="192.168.140.179", port=8003) 

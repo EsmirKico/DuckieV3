@@ -19,7 +19,7 @@ import json
 from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
 
 # API Configuration
-API_IP = '192.168.140.144'
+API_IP = '192.168.140.179'
 API_PORT = 8000  # Using Qwen Docker server
 API_ENDPOINT = '/autonomous_drive'
 

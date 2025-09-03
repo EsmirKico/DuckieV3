@@ -33,7 +33,7 @@ python3 server/test_lmstudio_api.py
 
 ## 🤖 DuckieBot Setup (Same as Before)
 
-1. **Update IP in autonomous_detector.py** (already done: `192.168.140.144`)
+1. **Update IP in autonomous_detector.py** (already done: `192.168.140.179`)
 2. **Deploy to DuckieBot**: Upload the code and run `./run_autonomous_driving.sh`
 
 ## 🎯 Key Advantages of LM Studio Version

@@ -30,7 +30,7 @@ python server/test_lmstudio_api.py
 
 ### **Step 3: Deploy to DuckieBot (5 minutes)**
 1. Upload code to DuckieBot
-2. Update IP in `autonomous_detector.py` (already done: `192.168.140.144`)
+2. Update IP in `autonomous_detector.py` (already done: `192.168.140.179`)
 3. Run: `./run_autonomous_driving.sh`
 
 ## 🎯 System Comparison
