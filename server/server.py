@@ -168,4 +168,4 @@ def read_root():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="192.168.140.144", port=8000)
+    uvicorn.run(app, host="192.168.140.179", port=8000)

@@ -507,4 +507,4 @@ if __name__ == "__main__":
         print("   - Network connectivity is working")
     
     import uvicorn
-    uvicorn.run(app, host="192.168.140.144", port=8000) 
+    uvicorn.run(app, host="192.168.140.179", port=8000) 

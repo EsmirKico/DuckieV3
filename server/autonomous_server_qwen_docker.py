@@ -447,4 +447,4 @@ if __name__ == "__main__":
     print(f"📡 Qwen Docker URL: http://{QWEN_DOCKER_HOST}:{QWEN_DOCKER_PORT}")
     print("🚀 Starting Autonomous Driving Server with Qwen Docker")
     
-    uvicorn.run(app, host="192.168.140.144", port=8000) 
+    uvicorn.run(app, host="192.168.140.179", port=8000) 
