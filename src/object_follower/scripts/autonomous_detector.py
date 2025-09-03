@@ -121,6 +121,11 @@ class AutonomousDriving:
         self.last_linear_vel = 1.0  # Default forward speed
         self.last_angular_vel = 0.0  # Default no steering
         self.continuous_movement_active = False
+
+        # Duck emergency stop feature
+        self.duck_emergency_stop_active = False
+        self.last_duck_detected_time = 0
+        self.duck_emergency_stop_duration = 30.0  # Keep stopped for up to 30 seconds while duck is present
         
         # Performance tracking
         self.last_process_time = 0
@@ -303,6 +308,13 @@ class AutonomousDriving:
             self.current_state = driving_state
             self.obstacle_detected = obstacle_info.get('detected', False)
             self.stop_line_detected = stop_line_info.get('detected', False)
+
+            # Check for duck detection and activate emergency stop
+            duck_detected = self.check_duck_detection(obstacle_info, result)
+            if duck_detected and not self.duck_emergency_stop_active:
+                self.activate_duck_emergency_stop()
+            elif not duck_detected and self.duck_emergency_stop_active:
+                self.deactivate_duck_emergency_stop()
             
             # Publish autonomous driving information
             lane_msg = json.dumps(lane_info)
@@ -311,8 +323,13 @@ class AutonomousDriving:
             self.stop_line_pub.publish(Bool(self.stop_line_detected))
             self.driving_state_pub.publish(String(driving_state))
             
-            # Convert to motor commands and publish
-            self.publish_motor_commands(steering_angle, target_speed, lane_info)
+            # Convert to motor commands and publish (only if duck emergency stop is not active)
+            if not self.duck_emergency_stop_active:
+                self.publish_motor_commands(steering_angle, target_speed, lane_info)
+            else:
+                # Duck emergency stop is active - publish emergency stop commands
+                self.emergency_stop()
+                self.driving_state_pub.publish(String("duck_emergency_stop"))
             
             # Publish compatibility messages for existing motor controller
             self.publish_compatibility_messages(lane_info, obstacle_info)
@@ -502,6 +519,64 @@ class AutonomousDriving:
         self.emergency_stop_enabled = False
         self.lane_controller.reset()
         rospy.loginfo("Autonomous driving resumed")
+
+    def check_duck_detection(self, obstacle_info, full_result):
+        """Check if any duck-related objects are detected"""
+        # Check obstacle info for duck detection
+        if obstacle_info.get('type') == 'duckie' or obstacle_info.get('duckie_detected', False):
+            return True
+
+        # Check for duckie_within_5cm flag
+        if obstacle_info.get('duckie_within_5cm', False):
+            return True
+
+        # Check for duck in obstacles section if it exists
+        obstacles = full_result.get('obstacles', {})
+        if obstacles.get('duckie_detected', False) or obstacles.get('duckie_within_5cm', False):
+            return True
+
+        # Check for duck in the reasoning text (fallback)
+        reasoning = full_result.get('reasoning', '').lower()
+        if any(keyword in reasoning for keyword in ['duck', 'duckie', 'rubber duck', 'yellow duck']):
+            return True
+
+        return False
+
+    def activate_duck_emergency_stop(self):
+        """Activate emergency stop due to duck detection"""
+        current_time = rospy.Time.now().to_sec()
+        self.duck_emergency_stop_active = True
+        self.last_duck_detected_time = current_time
+
+        # Publish emergency stop commands
+        self.emergency_stop()
+
+        # Publish status
+        self.driving_state_pub.publish(String("duck_emergency_stop"))
+
+        # Log the emergency stop
+        self.target_found_pub.publish(Bool(True))  # Signal that target (duck) is found
+        self.distance_pub.publish(Float32(0.0))    # Very close distance
+
+        rospy.logwarn("🚨 DUCK DETECTED - EMERGENCY STOP ACTIVATED!")
+        rospy.logwarn("🤖 Robot will remain stopped until duck is no longer visible")
+
+    def deactivate_duck_emergency_stop(self):
+        """Deactivate duck emergency stop when duck is no longer detected"""
+        self.duck_emergency_stop_active = False
+
+        # Reset continuous movement timer to start fresh
+        self.last_command_time = 0
+        self.continuous_movement_active = False
+
+        # Publish that target is no longer found
+        self.target_found_pub.publish(Bool(False))
+
+        # Log the deactivation
+        current_time = rospy.Time.now().to_sec()
+        duration = current_time - self.last_duck_detected_time
+        rospy.loginfo(f"✅ DUCK NO LONGER DETECTED - EMERGENCY STOP DEACTIVATED (duration: {duration:.1f}s)")
+        rospy.loginfo("🤖 Resuming normal autonomous driving")
 
     def run(self):
         """Main running loop"""

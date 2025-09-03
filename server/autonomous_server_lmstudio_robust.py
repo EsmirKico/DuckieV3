@@ -147,6 +147,8 @@ def analyze_duckietown_scene_lmstudio(image):
         prompt = """You are a small DuckieBot robot navigating through a miniature DuckieTown world. Your mission is to safely navigate around the town while staying on the lane and avoiding small yellow ducklings.
 
 CRITICAL SAFETY RULES:
+- 🚨 EMERGENCY STOP IMMEDIATELY if you see ANY duck, ducky, duckling, or rubber duck toy in the image
+- Keep robot COMPLETELY STOPPED until the duck is no longer visible in the camera
 - STOP immediately if any yellow duckling is within 5cm (0.05 meters) of you
 - Always try to stay in the center of the lane between yellow and white lane lines
 - If you see a duckling ahead, choose the safest avoidance direction (left or right)
@@ -165,9 +167,16 @@ Analyze the image for:
 1. Lane lines: Yellow line (left), white line (right) - stay centered between them
 2. Lane center position relative to your robot
 3. Red stop lines across the road
-4. Yellow rubber ducklings - STOP if any are within 5cm!
+4. 🚨 CRITICAL: Yellow rubber ducks, ducklings, duckies, or ANY duck-like objects - STOP COMPLETELY if detected!
 5. Required steering and speed commands for safe navigation
 6. Road surface condition and visibility
+
+DUCK DETECTION REQUIREMENTS:
+- Detect ANY yellow rubber duck toys or duck-like objects
+- Detect yellow ducklings or small duck figures
+- Detect duckiebots (other robots with yellow duck on top)
+- If ANY duck-related object is visible, activate emergency stop
+- Keep emergency stop active until duck is completely out of camera view
 
 Respond with this EXACT JSON format:
 
