@@ -112,6 +112,12 @@ CRITICAL SAFETY RULES:
 - Only move forward when the path is completely clear and safe
 - Be very careful around intersections and curves
 
+LANE FOLLOWING GUIDANCE:
+- Yellow lines (usually on the right side of the lane) - stay to the left of these
+- White lines (lane dividers or road edges) - stay to the right of these
+- Keep the robot centered in the drivable area between the lines
+- Road surface and path ahead should be clear for safe navigation
+
 Analyze this DuckieBot camera image and provide driving commands.
 
 Look for:
@@ -119,9 +125,10 @@ Look for:
 2. YELLOW DUCKLINGS: STOP if any are within 5cm!
 3. OBSTACLES: Other robots, people in the path
 4. STOP LINES: Red lines across the road
+5. ROAD SURFACE: Condition and visibility
 
 Respond with ONLY valid JSON:
-{{"reasoning": "Brief explanation of what you see and your driving decision", "lane_detected": true, "lane_confidence": 0.8, "lane_center_offset": 0.0, "lane_angle": 0.0, "duckie_detected": false, "duckie_distance": 10.0, "duckie_position_x": 0.0, "duckie_within_5cm": false, "obstacle_detected": false, "obstacle_distance": 10.0, "obstacle_position_x": 0.0, "stop_line_detected": false, "recommended_speed": 0.5, "recommended_steering": 0.0, "avoidance_direction": "stop", "driving_state": "lane_following"}}<|im_end|>
+{{"reasoning": "Brief explanation of what you see and your driving decision", "steering_direction": "left"|"right"|"straight", "confidence": 0.0-1.0, "steering_intensity": 0.1-1.0, "analysis": "brief description", "lane_detected": true, "lane_confidence": 0.8, "lane_center_offset": 0.0, "lane_angle": 0.0, "duckie_detected": false, "duckie_distance": 10.0, "duckie_position_x": 0.0, "duckie_within_5cm": false, "obstacle_detected": false, "obstacle_distance": 10.0, "obstacle_position_x": 0.0, "stop_line_detected": false, "recommended_speed": 0.5, "recommended_steering": 0.0, "avoidance_direction": "stop", "driving_state": "lane_following"}}<|im_end|>
 <|im_start|>assistant"""
 
         payload = {

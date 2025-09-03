@@ -129,7 +129,7 @@ class AutonomousDriving:
 
         # Safety parameters - Increased for better ground movement
         self.max_speed = rospy.get_param('~max_speed', 1.3)  # Increased from 0.8 to 1.3 for better power
-        self.emergency_stop_enabled = False
+        self.emergency_stop_enabled = True  # Emergency stop enabled for safety
         
         rospy.loginfo(f"Autonomous Driving initialized - Using API: {self.api_url}")
     

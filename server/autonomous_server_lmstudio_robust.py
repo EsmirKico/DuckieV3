@@ -153,6 +153,12 @@ CRITICAL SAFETY RULES:
 - Only move forward when the path is completely clear and safe
 - Be very careful around intersections and curves
 
+LANE FOLLOWING GUIDANCE:
+- Yellow lines (usually on the right side of the lane) - stay to the left of these
+- White lines (lane dividers or road edges) - stay to the right of these
+- Keep the robot centered in the drivable area between the lines
+- Road surface and path ahead should be clear for safe navigation
+
 IMPORTANT: You must respond with ONLY a valid JSON object, no other text.
 
 Analyze the image for:
@@ -161,6 +167,7 @@ Analyze the image for:
 3. Red stop lines across the road
 4. Yellow rubber ducklings - STOP if any are within 5cm!
 5. Required steering and speed commands for safe navigation
+6. Road surface condition and visibility
 
 Respond with this EXACT JSON format:
 
