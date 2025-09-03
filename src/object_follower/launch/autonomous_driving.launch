@@ -5,7 +5,7 @@
   <param name="use_sim_time" value="false"/>
   
   <!-- Auto-detect robot name or use default -->
-  <arg name="robot_name" default="blueduckie"/>
+  <arg name="robot_name" default="ducky"/>
   
   <!-- Autonomous Driving Detection Node -->
   <node name="autonomous_detector" pkg="object_follower" type="autonomous_detector.py" output="screen">

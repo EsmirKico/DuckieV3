@@ -16,6 +16,7 @@ from std_msgs.msg import Bool, Float32, String
 from cv_bridge import CvBridge
 import threading
 import json
+from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
 
 # API Configuration
 API_IP = '192.168.140.144'
@@ -70,8 +71,16 @@ class AutonomousDriving:
         self.session = requests.Session()
         self.session.headers.update({'Connection': 'keep-alive'})
         
-        # Publishers for autonomous driving
+        # Get robot name for proper topic namespacing
+        self.robot_name = rospy.get_param('~robot_name', 'ducky')
+        rospy.loginfo(f"Using robot name: {self.robot_name}")
+        
+        # Publishers for autonomous driving (with robot namespace)
         self.cmd_vel_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=1)
+        self.duckiebot_vel_pub = rospy.Publisher(f'/{self.robot_name}/car_cmd_switch_node/cmd', Twist2DStamped, queue_size=1)
+        self.wheels_pub = rospy.Publisher(f'/{self.robot_name}/wheels_driver_node/wheels_cmd', WheelsCmdStamped, queue_size=1)
+        
+        # Autonomous driving status publishers
         self.lane_info_pub = rospy.Publisher('/autonomous/lane_info', String, queue_size=1)
         self.obstacle_pub = rospy.Publisher('/autonomous/obstacle_detected', Bool, queue_size=1)
         self.stop_line_pub = rospy.Publisher('/autonomous/stop_line_detected', Bool, queue_size=1)
@@ -88,8 +97,7 @@ class AutonomousDriving:
                                  queue_size=1, buff_size=2**24)
         
         # DuckieBot-specific topic (with robot namespace)
-        robot_name = rospy.get_param('~robot_name', 'blueduckie')
-        compressed_topic = f"/{robot_name}/camera_node/image/compressed"
+        compressed_topic = f"/{self.robot_name}/camera_node/image/compressed"
         self.compressed_image_sub = rospy.Subscriber(compressed_topic, CompressedImage, 
                                            self.compressed_image_callback, 
                                            queue_size=1, buff_size=2**24)
@@ -258,23 +266,55 @@ class AutonomousDriving:
 
     def publish_motor_commands(self, steering_angle, target_speed, lane_info):
         """Publish motor commands for autonomous driving"""
-        # Create Twist message for direct motor control
-        twist_msg = Twist()
+        from std_msgs.msg import Header
         
         # Convert API commands to ROS velocity commands
-        twist_msg.linear.x = target_speed * self.max_speed  # Forward speed
-        twist_msg.angular.z = steering_angle * 2.0  # Angular velocity for steering
+        linear_vel = target_speed * self.max_speed  # Forward speed
+        angular_vel = steering_angle * 2.0  # Angular velocity for steering
         
         # Safety limits
-        twist_msg.linear.x = np.clip(twist_msg.linear.x, 0.0, self.max_speed)
-        twist_msg.angular.z = np.clip(twist_msg.angular.z, -2.0, 2.0)
+        linear_vel = np.clip(linear_vel, 0.0, self.max_speed)
+        angular_vel = np.clip(angular_vel, -2.0, 2.0)
         
         # Emergency stop override
         if self.emergency_stop_enabled:
-            twist_msg.linear.x = 0.0
-            twist_msg.angular.z = 0.0
+            linear_vel = 0.0
+            angular_vel = 0.0
         
+        current_time = rospy.Time.now()
+        
+        # 1. Standard ROS Twist message (for debugging)
+        twist_msg = Twist()
+        twist_msg.linear.x = linear_vel
+        twist_msg.angular.z = angular_vel
         self.cmd_vel_pub.publish(twist_msg)
+        
+        # 2. DuckieBot Twist2DStamped message (primary control)
+        duckiebot_msg = Twist2DStamped()
+        duckiebot_msg.header = Header()
+        duckiebot_msg.header.stamp = current_time
+        duckiebot_msg.header.frame_id = "base_link"
+        duckiebot_msg.v = linear_vel
+        duckiebot_msg.omega = angular_vel
+        self.duckiebot_vel_pub.publish(duckiebot_msg)
+        
+        # 3. DuckieBot WheelsCmdStamped message (backup control)
+        wheel_distance = 0.1  # meters between wheels
+        vel_left = linear_vel - angular_vel * wheel_distance / 2.0
+        vel_right = linear_vel + angular_vel * wheel_distance / 2.0
+        
+        wheels_msg = WheelsCmdStamped()
+        wheels_msg.header = Header()
+        wheels_msg.header.stamp = current_time
+        wheels_msg.header.frame_id = "base_link"
+        wheels_msg.vel_left = vel_left
+        wheels_msg.vel_right = vel_right
+        self.wheels_pub.publish(wheels_msg)
+        
+        # Log commands for debugging
+        rospy.loginfo_throttle(2, 
+            f"🚗 Motor Commands: linear={linear_vel:.3f}, angular={angular_vel:.3f} "
+            f"→ wheels L={vel_left:.3f}, R={vel_right:.3f} on robot '{self.robot_name}'")
 
     def publish_compatibility_messages(self, lane_info, obstacle_info):
         """Publish messages compatible with existing motor controller"""
@@ -300,17 +340,39 @@ class AutonomousDriving:
         """Emergency stop the robot"""
         self.emergency_stop_enabled = True
         
-        # Publish stop command
+        from std_msgs.msg import Header
+        current_time = rospy.Time.now()
+        
+        # Publish stop commands to all topics
+        # 1. Standard Twist
         twist_msg = Twist()
         twist_msg.linear.x = 0.0
         twist_msg.angular.z = 0.0
         self.cmd_vel_pub.publish(twist_msg)
         
+        # 2. DuckieBot Twist2DStamped
+        duckiebot_msg = Twist2DStamped()
+        duckiebot_msg.header = Header()
+        duckiebot_msg.header.stamp = current_time
+        duckiebot_msg.header.frame_id = "base_link"
+        duckiebot_msg.v = 0.0
+        duckiebot_msg.omega = 0.0
+        self.duckiebot_vel_pub.publish(duckiebot_msg)
+        
+        # 3. DuckieBot WheelsCmdStamped
+        wheels_msg = WheelsCmdStamped()
+        wheels_msg.header = Header()
+        wheels_msg.header.stamp = current_time
+        wheels_msg.header.frame_id = "base_link"
+        wheels_msg.vel_left = 0.0
+        wheels_msg.vel_right = 0.0
+        self.wheels_pub.publish(wheels_msg)
+        
         # Publish compatibility messages
         self.target_found_pub.publish(Bool(False))
         self.driving_state_pub.publish(String("emergency_stop"))
         
-        rospy.logwarn("EMERGENCY STOP ACTIVATED")
+        rospy.logwarn(f"🛑 EMERGENCY STOP ACTIVATED on robot '{self.robot_name}'")
 
     def resume_driving(self):
         """Resume autonomous driving after emergency stop"""
