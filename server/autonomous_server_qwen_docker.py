@@ -73,15 +73,21 @@ video_filename = None
 def encode_image_to_base64(image: np.ndarray) -> str:
     """Convert OpenCV image to base64 string for API transmission"""
     try:
+        # Resize image to reduce context size (smaller images work better with limited context)
+        height, width = image.shape[:2]
+        target_width = 320  # Reduced from original width
+        target_height = int(height * target_width / width)
+        resized_image = cv2.resize(image, (target_width, target_height))
+        
         # Convert BGR to RGB
-        image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+        image_rgb = cv2.cvtColor(resized_image, cv2.COLOR_BGR2RGB)
         
         # Convert to PIL Image
         pil_image = Image.fromarray(image_rgb)
         
-        # Save to bytes
+        # Save to bytes with lower quality to reduce size
         buffer = io.BytesIO()
-        pil_image.save(buffer, format="JPEG", quality=85)
+        pil_image.save(buffer, format="JPEG", quality=60)
         image_bytes = buffer.getvalue()
         
         # Encode to base64

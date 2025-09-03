@@ -11,7 +11,7 @@ import time
 from pathlib import Path
 
 # Configuration
-SERVER_URL = "http://192.168.140.144:8002"
+SERVER_URL = "http://192.168.140.144:8000"
 QWEN_DOCKER_URL = "http://192.168.140.179:8080"
 
 def test_qwen_docker_connection():

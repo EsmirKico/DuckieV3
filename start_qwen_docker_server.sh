@@ -29,9 +29,9 @@ echo "📦 Installing Python dependencies..."
 pip3 install fastapi uvicorn opencv-python numpy pydantic python-multipart requests pillow
 
 echo ""
-echo "🚀 Starting Qwen Docker server on port 8002..."
+echo "🚀 Starting Qwen Docker server on port 8000..."
 echo "📡 Connecting to Qwen Docker at: $QWEN_URL"
-echo "🌐 Server will be available at: http://0.0.0.0:8002"
+echo "🌐 Server will be available at: http://0.0.0.0:8000"
 echo ""
 echo "Press Ctrl+C to stop the server"
 echo ""

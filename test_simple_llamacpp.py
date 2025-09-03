@@ -6,7 +6,7 @@ Simple test for llama.cpp integration without images
 import requests
 import json
 
-QWEN_URL = "http://192.168.140.179:8080"
+API_PORT = 8000  # Using Qwen Docker server
 
 def test_simple_text():
     """Test simple text completion"""
@@ -34,7 +34,7 @@ Analyze a Duckietown road scene. Respond with JSON:
     
     try:
         response = requests.post(
-            f"{QWEN_URL}/completion",
+            f"http://192.168.140.179:{API_PORT}/completion",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=30
@@ -100,7 +100,7 @@ Analyze this image and respond with JSON:
     
     try:
         response = requests.post(
-            f"{QWEN_URL}/completion",
+            f"http://192.168.140.179:{API_PORT}/completion",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=30
