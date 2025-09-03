@@ -10,7 +10,7 @@
   <!-- Autonomous Driving Detection Node -->
   <node name="autonomous_detector" pkg="object_follower" type="autonomous_detector.py" output="screen">
     <param name="robot_name" value="$(arg robot_name)"/>
-    <param name="max_speed" value="0.4"/>
+    <param name="max_speed" value="0.8"/>
     <param name="api_timeout" value="15.0"/>
     <!-- Remap to robot-specific camera topic -->
     <remap from="/camera_node/image/compressed" to="/$(arg robot_name)/camera_node/image/compressed"/>
@@ -18,7 +18,7 @@
   
   <!-- Enhanced Motor Controller Node - Lane Following Mode -->
   <node name="enhanced_motor_controller" pkg="object_follower" type="enhanced_motor_controller.py" output="screen">
-    <param name="max_speed" value="0.4"/>
+    <param name="max_speed" value="0.8"/>
     <param name="target_distance" value="1.0"/>  <!-- Fixed distance for lane following -->
     <param name="distance_tolerance" value="0.5"/>
     <param name="wheel_distance" value="0.1"/>

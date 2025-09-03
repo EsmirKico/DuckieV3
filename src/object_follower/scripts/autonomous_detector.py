@@ -121,7 +121,7 @@ class AutonomousDriving:
         self._processing = False
         
         # Safety parameters
-        self.max_speed = rospy.get_param('~max_speed', 0.4)
+        self.max_speed = rospy.get_param('~max_speed', 0.8)
         self.emergency_stop_enabled = False
         
         rospy.loginfo(f"Autonomous Driving initialized - Using API: {self.api_url}")
@@ -321,8 +321,8 @@ class AutonomousDriving:
         from std_msgs.msg import Header
         current_time = rospy.Time.now()
         
-        # Safe default: slow forward movement, no steering
-        linear_vel = 0.15  # Slow forward speed
+        # Safe default: moderate forward movement, no steering
+        linear_vel = 0.4  # Moderate forward speed for ground movement
         angular_vel = 0.0  # No steering
         
         # Publish to all motor control topics
@@ -358,7 +358,7 @@ class AutonomousDriving:
         self.driving_state_pub.publish(String("safe_default"))
         self.target_found_pub.publish(Bool(False))
         
-        rospy.loginfo_throttle(2, f"🔒 Safe driving: forward={linear_vel:.2f}, steering={angular_vel:.2f}")
+        rospy.loginfo_throttle(2, f"🔒 Safe driving: forward={linear_vel:.2f}, steering={angular_vel:.2f} (increased for ground movement)")
 
     def publish_compatibility_messages(self, lane_info, obstacle_info):
         """Publish messages compatible with existing motor controller"""
@@ -386,8 +386,8 @@ class AutonomousDriving:
         from std_msgs.msg import Header
         current_time = rospy.Time.now()
         
-        # Gentle stop: very slow forward movement instead of full stop
-        linear_vel = 0.05  # Very slow forward
+        # Gentle stop: slow forward movement instead of full stop
+        linear_vel = 0.2  # Slow but sufficient forward speed for ground movement
         angular_vel = 0.0  # No steering
         
         # Publish gentle stop commands to all topics

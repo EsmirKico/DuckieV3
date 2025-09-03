@@ -336,7 +336,7 @@ def calculate_driving_commands(lane_info, obstacle_info, stop_line_info):
     
     # Default values
     steering_angle = 0.0
-    target_speed = 0.3  # Default moderate speed
+    target_speed = 0.6  # Default higher speed for ground movement
     driving_state = "lane_following"
     
     try:
@@ -351,11 +351,11 @@ def calculate_driving_commands(lane_info, obstacle_info, stop_line_info):
         if obstacle_info.detected and obstacle_info.distance < SAFE_DISTANCE_THRESHOLD:
             if obstacle_info.avoidance_direction == "left":
                 steering_angle = -0.8  # Turn left
-                target_speed = 0.2  # Slow down
+                target_speed = 0.4  # Moderate speed for obstacle avoidance
                 driving_state = "avoiding_obstacle"
             elif obstacle_info.avoidance_direction == "right":
                 steering_angle = 0.8  # Turn right
-                target_speed = 0.2  # Slow down
+                target_speed = 0.4  # Moderate speed for obstacle avoidance
                 driving_state = "avoiding_obstacle"
             else:  # stop
                 steering_angle = 0.0
@@ -374,9 +374,9 @@ def calculate_driving_commands(lane_info, obstacle_info, stop_line_info):
             
             # Adjust speed based on curvature
             if abs(steering_angle) > 0.5:
-                target_speed = 0.2  # Slow down for sharp turns
+                target_speed = 0.4  # Moderate speed for sharp turns
             else:
-                target_speed = 0.4  # Normal speed
+                target_speed = 0.7  # Higher normal speed for ground movement
             
             driving_state = "lane_following"
         else:
