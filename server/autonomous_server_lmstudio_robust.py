@@ -305,16 +305,22 @@ def parse_vision_response(response_text, image_shape):
             obstacle_info.detected = obs_data.get("duckie_detected", False) or obs_data.get("other_obstacles", False)
             if obstacle_info.detected:
                 obstacle_info.type = "duckie" if obs_data.get("duckie_detected", False) else "other"
-                obstacle_info.position_x = float(obs_data.get("duckie_position_x", 0.0))
-                obstacle_info.distance = float(obs_data.get("duckie_distance", 10.0))
+                # Handle null values from Qwen
+                pos_x = obs_data.get("duckie_position_x", 0.0)
+                distance = obs_data.get("duckie_distance", 10.0)
+                obstacle_info.position_x = float(pos_x) if pos_x is not None else 0.0
+                obstacle_info.distance = float(distance) if distance is not None else 10.0
                 obstacle_info.avoidance_direction = obs_data.get("avoidance_action", "none")
         
         # Parse stop line information
         if "stop_line" in analysis:
             stop_data = analysis["stop_line"]
             stop_line_info.detected = stop_data.get("red_line_detected", False)
-            stop_line_info.distance = float(stop_data.get("distance_to_line", 10.0))
-            stop_line_info.confidence = float(stop_data.get("confidence", 0.0))
+            # Handle null values from Qwen
+            distance = stop_data.get("distance_to_line", 10.0)
+            confidence = stop_data.get("confidence", 0.0)
+            stop_line_info.distance = float(distance) if distance is not None else 10.0
+            stop_line_info.confidence = float(confidence) if confidence is not None else 0.0
 
         logger.info(f"Parsed successfully - Lane conf: {lane_info.confidence:.2f}, Obstacles: {obstacle_info.detected}")
 

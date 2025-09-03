@@ -211,12 +211,14 @@ class AutonomousDriving:
             if result:
                 self.process_driving_response(result, image)
             else:
-                # Emergency stop if API fails
-                self.emergency_stop()
+                # API failed - use safe driving defaults instead of emergency stop
+                rospy.logwarn("API failed, using safe driving defaults")
+                self.publish_safe_driving_defaults()
 
         except Exception as e:
             rospy.logerr(f"Error in autonomous driving: {str(e)}")
-            self.emergency_stop()
+            # Use safe defaults instead of emergency stop
+            self.publish_safe_driving_defaults()
         finally:
             self._processing = False
 
@@ -262,7 +264,8 @@ class AutonomousDriving:
             
         except Exception as e:
             rospy.logerr(f"Error processing driving response: {str(e)}")
-            self.emergency_stop()
+            # Use safe defaults instead of emergency stop
+            self.publish_safe_driving_defaults()
 
     def publish_motor_commands(self, steering_angle, target_speed, lane_info):
         """Publish motor commands for autonomous driving"""
@@ -276,10 +279,7 @@ class AutonomousDriving:
         linear_vel = np.clip(linear_vel, 0.0, self.max_speed)
         angular_vel = np.clip(angular_vel, -2.0, 2.0)
         
-        # Emergency stop override
-        if self.emergency_stop_enabled:
-            linear_vel = 0.0
-            angular_vel = 0.0
+        # Emergency stop override (disabled - robot keeps moving with safe defaults)
         
         current_time = rospy.Time.now()
         
@@ -316,6 +316,50 @@ class AutonomousDriving:
             f"🚗 Motor Commands: linear={linear_vel:.3f}, angular={angular_vel:.3f} "
             f"→ wheels L={vel_left:.3f}, R={vel_right:.3f} on robot '{self.robot_name}'")
 
+    def publish_safe_driving_defaults(self):
+        """Publish safe driving defaults when vision fails"""
+        from std_msgs.msg import Header
+        current_time = rospy.Time.now()
+        
+        # Safe default: slow forward movement, no steering
+        linear_vel = 0.15  # Slow forward speed
+        angular_vel = 0.0  # No steering
+        
+        # Publish to all motor control topics
+        # 1. Standard Twist
+        twist_msg = Twist()
+        twist_msg.linear.x = linear_vel
+        twist_msg.angular.z = angular_vel
+        self.cmd_vel_pub.publish(twist_msg)
+        
+        # 2. DuckieBot Twist2DStamped
+        duckiebot_msg = Twist2DStamped()
+        duckiebot_msg.header = Header()
+        duckiebot_msg.header.stamp = current_time
+        duckiebot_msg.header.frame_id = "base_link"
+        duckiebot_msg.v = linear_vel
+        duckiebot_msg.omega = angular_vel
+        self.duckiebot_vel_pub.publish(duckiebot_msg)
+        
+        # 3. DuckieBot WheelsCmdStamped
+        wheel_distance = 0.1
+        vel_left = linear_vel - angular_vel * wheel_distance / 2.0
+        vel_right = linear_vel + angular_vel * wheel_distance / 2.0
+        
+        wheels_msg = WheelsCmdStamped()
+        wheels_msg.header = Header()
+        wheels_msg.header.stamp = current_time
+        wheels_msg.header.frame_id = "base_link"
+        wheels_msg.vel_left = vel_left
+        wheels_msg.vel_right = vel_right
+        self.wheels_pub.publish(wheels_msg)
+        
+        # Publish status messages
+        self.driving_state_pub.publish(String("safe_default"))
+        self.target_found_pub.publish(Bool(False))
+        
+        rospy.loginfo_throttle(2, f"🔒 Safe driving: forward={linear_vel:.2f}, steering={angular_vel:.2f}")
+
     def publish_compatibility_messages(self, lane_info, obstacle_info):
         """Publish messages compatible with existing motor controller"""
         # Convert lane following to "target position" for compatibility
@@ -337,17 +381,20 @@ class AutonomousDriving:
             self.target_found_pub.publish(Bool(False))
 
     def emergency_stop(self):
-        """Emergency stop the robot"""
-        self.emergency_stop_enabled = True
+        """Gentle stop - reduce to safe speed instead of full stop"""
         
         from std_msgs.msg import Header
         current_time = rospy.Time.now()
         
-        # Publish stop commands to all topics
+        # Gentle stop: very slow forward movement instead of full stop
+        linear_vel = 0.05  # Very slow forward
+        angular_vel = 0.0  # No steering
+        
+        # Publish gentle stop commands to all topics
         # 1. Standard Twist
         twist_msg = Twist()
-        twist_msg.linear.x = 0.0
-        twist_msg.angular.z = 0.0
+        twist_msg.linear.x = linear_vel
+        twist_msg.angular.z = angular_vel
         self.cmd_vel_pub.publish(twist_msg)
         
         # 2. DuckieBot Twist2DStamped
@@ -355,24 +402,28 @@ class AutonomousDriving:
         duckiebot_msg.header = Header()
         duckiebot_msg.header.stamp = current_time
         duckiebot_msg.header.frame_id = "base_link"
-        duckiebot_msg.v = 0.0
-        duckiebot_msg.omega = 0.0
+        duckiebot_msg.v = linear_vel
+        duckiebot_msg.omega = angular_vel
         self.duckiebot_vel_pub.publish(duckiebot_msg)
         
         # 3. DuckieBot WheelsCmdStamped
+        wheel_distance = 0.1
+        vel_left = linear_vel - angular_vel * wheel_distance / 2.0
+        vel_right = linear_vel + angular_vel * wheel_distance / 2.0
+        
         wheels_msg = WheelsCmdStamped()
         wheels_msg.header = Header()
         wheels_msg.header.stamp = current_time
         wheels_msg.header.frame_id = "base_link"
-        wheels_msg.vel_left = 0.0
-        wheels_msg.vel_right = 0.0
+        wheels_msg.vel_left = vel_left
+        wheels_msg.vel_right = vel_right
         self.wheels_pub.publish(wheels_msg)
         
         # Publish compatibility messages
         self.target_found_pub.publish(Bool(False))
-        self.driving_state_pub.publish(String("emergency_stop"))
+        self.driving_state_pub.publish(String("gentle_stop"))
         
-        rospy.logwarn(f"🛑 EMERGENCY STOP ACTIVATED on robot '{self.robot_name}'")
+        rospy.logwarn(f"⚠️ GENTLE STOP - slow movement on robot '{self.robot_name}'")
 
     def resume_driving(self):
         """Resume autonomous driving after emergency stop"""

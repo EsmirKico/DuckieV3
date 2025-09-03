@@ -1,0 +1,20 @@
+INFO:     Started server process [10627]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+🚀 Using LM Studio for Qwen Vision Model (ROBUST VERSION)
+📡 LM Studio URL: http://192.168.140.1:1234
+🚀 Starting ROBUST Autonomous Driving Server with LM Studio + Qwen
+✅ LM Studio connected! Available models: 3
+✅ LM Studio connection verified!
+✅ LM Studio connected! Available models: 3
+INFO:     127.0.0.1:46082 - "GET /test_lmstudio HTTP/1.1" 200 OK
+INFO:__main__:Received autonomous drive request
+INFO:__main__:Processing image of size: (480, 640, 3)
+INFO:__main__:Sending request to LM Studio...
+INFO:__main__:LM Studio response received successfully
+INFO:__main__:Parsed successfully - Lane conf: 0.90, Obstacles: False
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in "/home/lesgrossman/.local/lib/python3.10/site-packages/cv2/qt/plugins"
+INFO:__main__:Successfully processed image - State: lane_following, Steering: -0.020
+Started recording autonomous driving stream to autonomous_stream.avi
+INFO:     127.0.0.1:46518 - "POST /autonomous_drive HTTP/1.1" 200 OK
