@@ -1,0 +1,52 @@
+<launch>
+  <!-- DuckieBot Following Mode - Aggressive Object Following -->
+  
+  <!-- Parameters -->
+  <param name="use_sim_time" value="false"/>
+  
+  <!-- Auto-detect robot name or use default -->
+  <arg name="robot_name" default="blueduckie"/>
+  
+  <!-- Enhanced Object Detection Node -->
+  <node name="enhanced_object_detector" pkg="object_follower" type="enhanced_object_detector.py" output="screen">
+    <param name="detection_method" value="color"/>
+    <param name="target_color" value="red"/>
+    <param name="robot_name" value="$(arg robot_name)"/>
+    <!-- Remap to robot-specific camera topic -->
+    <remap from="/camera_node/image/compressed" to="/$(arg robot_name)/camera_node/image/compressed"/>
+  </node>
+  
+  <!-- Enhanced Motor Controller Node - Following Mode -->
+  <node name="enhanced_motor_controller" pkg="object_follower" type="enhanced_motor_controller.py" output="screen">
+    <param name="max_speed" value="0.15"/>
+    <param name="target_distance" value="0.12"/>  <!-- Very close following -->
+    <param name="distance_tolerance" value="0.03"/>  <!-- Tight tolerance -->
+    <param name="wheel_distance" value="0.1"/>
+    <!-- Gentle following PID -->
+    <param name="kp_lateral" value="0.6"/>
+    <param name="ki_lateral" value="0.02"/>
+    <param name="kd_lateral" value="0.1"/>
+    <param name="kp_distance" value="0.2"/>  <!-- Gentle distance control -->
+    <param name="ki_distance" value="0.005"/>
+    <param name="kd_distance" value="0.02"/>
+    <!-- Remap to robot-specific topics -->
+    <remap from="/car_cmd_switch_node/cmd" to="/$(arg robot_name)/car_cmd_switch_node/cmd"/>
+    <remap from="/wheels_driver_node/wheels_cmd" to="/$(arg robot_name)/wheels_driver_node/wheels_cmd"/>
+  </node>
+  
+  <!-- Obstacle Detector Node - Less sensitive for following -->
+  <node name="obstacle_detector" pkg="object_follower" type="obstacle_detector.py" output="screen">
+    <param name="detection_method" value="edge"/>
+    <param name="min_obstacle_area" value="800"/>
+    <param name="safe_distance_pixels" value="40"/>  <!-- Allow closer approach -->
+  </node>
+  
+  <!-- Performance Monitor -->
+  <node name="performance_monitor" pkg="object_follower" type="performance_monitor.py" output="screen">
+    <param name="target_distance" value="0.12"/>
+  </node>
+  
+  <!-- System Monitor -->
+  <node name="system_monitor" pkg="object_follower" type="system_monitor.py" output="screen"/>
+  
+</launch>

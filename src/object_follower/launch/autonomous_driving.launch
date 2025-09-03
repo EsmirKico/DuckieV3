@@ -1,0 +1,52 @@
+<launch>
+  <!-- DuckieBot Autonomous Driving Mode with Qwen2.5-VL -->
+  
+  <!-- Parameters -->
+  <param name="use_sim_time" value="false"/>
+  
+  <!-- Auto-detect robot name or use default -->
+  <arg name="robot_name" default="blueduckie"/>
+  
+  <!-- Autonomous Driving Detection Node -->
+  <node name="autonomous_detector" pkg="object_follower" type="autonomous_detector.py" output="screen">
+    <param name="robot_name" value="$(arg robot_name)"/>
+    <param name="max_speed" value="0.4"/>
+    <param name="api_timeout" value="2.0"/>
+    <!-- Remap to robot-specific camera topic -->
+    <remap from="/camera_node/image/compressed" to="/$(arg robot_name)/camera_node/image/compressed"/>
+  </node>
+  
+  <!-- Enhanced Motor Controller Node - Lane Following Mode -->
+  <node name="enhanced_motor_controller" pkg="object_follower" type="enhanced_motor_controller.py" output="screen">
+    <param name="max_speed" value="0.4"/>
+    <param name="target_distance" value="1.0"/>  <!-- Fixed distance for lane following -->
+    <param name="distance_tolerance" value="0.5"/>
+    <param name="wheel_distance" value="0.1"/>
+    
+    <!-- Lane following PID (different from object following) -->
+    <param name="kp_lateral" value="0.8"/>  <!-- Gentler steering for lane following -->
+    <param name="ki_lateral" value="0.02"/>
+    <param name="kd_lateral" value="0.15"/>
+    <param name="kp_distance" value="0.1"/>  <!-- Less aggressive distance control -->
+    <param name="ki_distance" value="0.005"/>
+    <param name="kd_distance" value="0.02"/>
+    
+    <!-- Remap to robot-specific topics -->
+    <remap from="/car_cmd_switch_node/cmd" to="/$(arg robot_name)/car_cmd_switch_node/cmd"/>
+    <remap from="/wheels_driver_node/wheels_cmd" to="/$(arg robot_name)/wheels_driver_node/wheels_cmd"/>
+  </node>
+  
+  <!-- Autonomous System Monitor -->
+  <node name="autonomous_monitor" pkg="object_follower" type="autonomous_monitor.py" output="screen">
+    <param name="safety_timeout" value="5.0"/>
+  </node>
+  
+  <!-- Performance Monitor -->
+  <node name="performance_monitor" pkg="object_follower" type="performance_monitor.py" output="screen">
+    <param name="target_distance" value="1.0"/>
+  </node>
+  
+  <!-- System Monitor -->
+  <node name="system_monitor" pkg="object_follower" type="system_monitor.py" output="screen"/>
+  
+</launch> 
