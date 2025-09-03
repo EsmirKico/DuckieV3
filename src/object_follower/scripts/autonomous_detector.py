@@ -99,7 +99,7 @@ class AutonomousDriving:
         
         # API Configuration
         self.api_url = f"http://{API_IP}:{API_PORT}{API_ENDPOINT}"
-        self.api_timeout = rospy.get_param('~api_timeout', 1.0)  # Longer timeout for vision model
+        self.api_timeout = rospy.get_param('~api_timeout', 10.0)  # Longer timeout for Qwen2.5-VL-7B model
         
         # Autonomous driving state
         self.current_state = "lane_following"
@@ -109,7 +109,7 @@ class AutonomousDriving:
         
         # Performance tracking
         self.last_process_time = 0
-        self.min_process_interval = 0.2  # Process at 5 FPS (vision models are slower)
+        self.min_process_interval = 0.3  # Process at ~3 FPS (optimized for Qwen2.5-VL-7B)
         self._processing = False
         
         # Safety parameters

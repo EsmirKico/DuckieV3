@@ -165,7 +165,7 @@ Remember: Respond with ONLY the JSON object, no explanations or additional text.
     try:
         # Prepare the request for LM Studio
         payload = {
-            "model": "qwen2-vl",  # This might need to be adjusted based on your LM Studio model name
+            "model": "qwen/qwen2.5-vl-7b",  # Updated to match your LM Studio model
             "messages": [
                 {
                     "role": "user",
