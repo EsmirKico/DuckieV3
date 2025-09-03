@@ -95,7 +95,7 @@ def query_qwen_docker(image_b64: str) -> Dict[str, Any]:
     try:
         logger.info("Sending request to Qwen Docker container (llama.cpp)...")
         
-        # Prepare the request payload for llama.cpp server
+        # Prepare the request payload for llama.cpp server (fixed prompt)
         prompt = f"""<|im_start|>system
 You are an autonomous driving system for a DuckieBot. Analyze camera images and provide precise driving commands.<|im_end|>
 <|im_start|>user
@@ -105,25 +105,12 @@ Analyze this DuckieBot camera image and provide driving commands.
 
 Look for:
 1. LANE LINES: Yellow/white lines marking the road
-2. OBSTACLES: Duckies, other robots, people in the path  
+2. OBSTACLES: Duckies, other robots, people in the path
 3. STOP LINES: Red lines across the road
 4. TRAFFIC SIGNS: Stop signs, turn indicators
 
 Respond with ONLY valid JSON:
-{{
-    "lane_detected": true/false,
-    "lane_confidence": 0.0-1.0,
-    "lane_center_offset": -1.0 to 1.0,
-    "lane_angle": -45.0 to 45.0,
-    "obstacle_detected": true/false,
-    "obstacle_distance": 0.0-10.0,
-    "obstacle_position_x": -1.0 to 1.0,
-    "stop_line_detected": true/false,
-    "recommended_speed": 0.0-1.0,
-    "recommended_steering": -1.0 to 1.0,
-    "avoidance_direction": "left"/"right"/"stop",
-    "driving_state": "lane_following"/"avoiding_obstacle"/"stopped"/"turning"
-}}<|im_end|>
+{{"lane_detected": true, "lane_confidence": 0.8, "lane_center_offset": 0.0, "lane_angle": 0.0, "obstacle_detected": false, "obstacle_distance": 10.0, "obstacle_position_x": 0.0, "stop_line_detected": false, "recommended_speed": 0.5, "recommended_steering": 0.0, "avoidance_direction": "stop", "driving_state": "lane_following"}}<|im_end|>
 <|im_start|>assistant"""
 
         payload = {
@@ -190,7 +177,8 @@ Respond with ONLY valid JSON:
         raise HTTPException(status_code=500, detail=f"Network error: {str(e)}")
     except Exception as e:
         logger.error(f"Unexpected error calling Qwen API: {e}")
-        logger.error(traceback.format_exc())
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
 
 def parse_vision_response(vision_data: Dict[str, Any]) -> Tuple[LaneInfo, ObstacleInfo]:
@@ -394,7 +382,8 @@ async def autonomous_drive(file: UploadFile = File(...)):
         raise
     except Exception as e:
         logger.error(f"Error in autonomous_drive: {e}")
-        logger.error(traceback.format_exc())
+        logger.error(f"Error type: {type(e)}")
+        logger.error(f"Full traceback: {traceback.format_exc()}")
         
         # Return safe emergency response
         return AutonomousDriveResponse(
@@ -405,7 +394,7 @@ async def autonomous_drive(file: UploadFile = File(...)):
             obstacle_detected=True,
             obstacle_distance=0.0,
             emergency_stop=True,
-            debug_info={"error": str(e)}
+            debug_info={"error": str(e), "error_type": str(type(e))}
         )
 
 @app.get("/health")
@@ -452,4 +441,4 @@ if __name__ == "__main__":
     print(f"📡 Qwen Docker URL: http://{QWEN_DOCKER_HOST}:{QWEN_DOCKER_PORT}")
     print("🚀 Starting Autonomous Driving Server with Qwen Docker")
     
-    uvicorn.run(app, host="0.0.0.0", port=8002) 
+    uvicorn.run(app, host="192.168.140.144", port=8000) 

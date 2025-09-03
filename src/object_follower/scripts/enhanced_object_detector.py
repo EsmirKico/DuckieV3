@@ -91,7 +91,7 @@ class EnhancedObjectDetector:
                                  queue_size=1, buff_size=2**24)
         
         # DuckieBot-specific topic (with robot namespace)
-        robot_name = rospy.get_param('~robot_name', 'blueduckie')
+        robot_name = rospy.get_param('~robot_name', 'ducky')
         compressed_topic = f"/{robot_name}/camera_node/image/compressed"
         self.compressed_image_sub = rospy.Subscriber(compressed_topic, CompressedImage, 
                                            self.compressed_image_callback, 

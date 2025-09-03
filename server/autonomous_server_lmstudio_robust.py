@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 app = FastAPI()
 
 # LM Studio Configuration
-LM_STUDIO_URL = "http://192.168.140.1:1234"
+LM_STUDIO_URL = "http://192.168.140.179:8080"
 LM_STUDIO_CHAT_ENDPOINT = f"{LM_STUDIO_URL}/v1/chat/completions"
 
 # Video recording variables
@@ -507,4 +507,4 @@ if __name__ == "__main__":
         print("   - Network connectivity is working")
     
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)  # Different port to avoid conflict 
+    uvicorn.run(app, host="192.168.140.144", port=8000) 

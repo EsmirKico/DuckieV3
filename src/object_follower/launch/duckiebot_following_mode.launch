@@ -5,7 +5,7 @@
   <param name="use_sim_time" value="false"/>
   
   <!-- Auto-detect robot name or use default -->
-  <arg name="robot_name" default="blueduckie"/>
+  <arg name="robot_name" default="ducky"/>
   
   <!-- Enhanced Object Detection Node -->
   <node name="enhanced_object_detector" pkg="object_follower" type="enhanced_object_detector.py" output="screen">
