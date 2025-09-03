@@ -20,7 +20,7 @@ from duckietown_msgs.msg import Twist2DStamped, WheelsCmdStamped
 
 # API Configuration
 API_IP = '192.168.140.144'
-API_PORT = 8001  # Using robust server
+API_PORT = 8002  # Using Qwen Docker server
 API_ENDPOINT = '/autonomous_drive'
 
 class LaneFollowingController:
